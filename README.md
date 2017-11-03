@@ -1,6 +1,14 @@
 # avail-test
 Run your general purpose availability tests in parallel
 
+# Download avail-tests
+
+```
+git clone https://github.com/aminmarashi/avail-test.git avail-test
+cd avail-test
+# source install.sh
+```
+
 # Install availability tests
 
 ## Install locally for the current user
