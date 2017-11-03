@@ -1,0 +1,27 @@
+#! /bin/bash
+
+avail_path() {
+    pushd `dirname $0` > /dev/null
+    pwd -P
+    popd > /dev/null
+}
+
+AVAIL_PATH=`avail_path`
+
+. "$AVAIL_PATH/avail-env" "$@"
+
+test -e "$COMMAND" && echo 'usage: avail-run <-c|--command> <command>' && exit 1
+
+test -n "$INIT_SCRIPT" && . "$INIT_SCRIPT"
+
+rm "$LOGS/"* 2>/dev/null
+
+for t in "$TEST_DIR/"*; do
+    for p in $RUN_PREFIX; do
+	TEST="$p"`basename "$t"`
+        $COMMAND $t > "$AVAIL_LOGS/$TEST.log" 2>&1 &
+        echo $! > "$AVAIL_PIDS/$TEST.pid"
+    done
+done
+
+exit 0;

@@ -1,0 +1,16 @@
+#! /bin/bash
+
+avail_path() {
+    pushd `dirname $0` > /dev/null
+    pwd -P
+    popd > /dev/null
+}
+
+AVAIL_PATH=`avail_path`
+
+. "$AVAIL_PATH/avail-env" "$@"
+
+"$AVAIL_PATH/"avail-stop && "$AVAIL_PATH/"avail-run "$@"
+"$AVAIL_PATH/"avail-watch "-p --interval=10 $@" > "$AVAIL_WATCH_LOG" &
+echo $! > "$AVAIL_PIDS/avail-watch.pid"
+"$AVAIL_PATH/"avail-watch "-p $@"

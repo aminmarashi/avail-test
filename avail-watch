@@ -1,0 +1,43 @@
+#! /bin/bash
+
+avail_path() {
+    pushd `dirname $0` > /dev/null
+    pwd -P
+    popd > /dev/null
+}
+
+AVAIL_PATH=`avail_path`
+
+. "$AVAIL_PATH/avail-env" "$@"
+
+is_alive() {
+    ALIVE=`echo $ALIVE_LIST | grep $1`
+    eval "$ALIVE_CHECK"
+    if [ $? -eq 0 -a -n "$ALIVE" ]; then
+        OUTPUT="$OUTPUT+"
+    else
+        OUTPUT="$OUTPUT."
+    fi
+}
+
+show_test_progress() {
+    echo -e 'Time\t|# Alive|Alive Tests'
+    while : ; do
+        ALIVE_LIST=`find "$AVAIL_LOGS" -newermt "-$ALIVE_TIMEOUT seconds"`
+        for i in "$AVAIL_LOGS/"*; do
+            is_alive $i;
+        done
+	COUNT=`echo $OUTPUT |grep + -o |wc -l`
+        echo -e `date +'%H:%M:%S'`"|$COUNT\t|$OUTPUT"
+	OUTPUT=''
+	sleep $INTERVAL;
+    done
+}
+
+if [ -n "$PROGRESS" ]; then
+    show_test_progress
+else
+    watch -n $INTERVAL "tail -n 1 $AVAIL_LOGS/*"
+fi
+
+exit 1;

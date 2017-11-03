@@ -1,0 +1,18 @@
+#! /bin/bash
+
+avail_path() {
+    pushd `dirname $0` > /dev/null
+    pwd -P
+    popd > /dev/null
+}
+
+AVAIL_PATH=`avail_path`
+
+. "$AVAIL_PATH/avail-env" "$@"
+
+ls "$AVAIL_PIDS/"* >/dev/null 2>&1 || exit 0
+
+cat "$AVAIL_PIDS/"* |xargs kill
+rm "$AVAIL_PIDS/"*
+
+exit 0;

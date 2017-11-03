@@ -1,0 +1,62 @@
+#! /bin/bash
+
+avail_path() {
+    pushd `dirname $0` > /dev/null
+    pwd -P
+    popd > /dev/null
+}
+
+AVAIL_PATH=`avail_path`
+
+CWD="`pwd`"
+AVAIL_CONFIG="$CWD"/avail.config
+AVAIL_WATCH_LOG="$CWD"/avail.log
+
+. "$AVAIL_CONFIG"
+
+ARG_RE='[\s=]*\K[^\s^=]*'
+
+# Run args
+RUN_PREFIX_ARG=$(echo $@ | grep -oP -- "--run-prefix$ARG_RE")
+COMMAND_ARG=$(echo $@ | grep -oP -- "(-c|--command)$ARG_RE")
+TEST_DIR_ARG=$(echo $@ | grep -oP -- "(-t|--test-dir)$ARG_RE")
+INIT_SCRIPT_ARG=$(echo $@ | grep -oP -- "(-i|--init-script)$ARG_RE")
+
+test -n "$RUN_PREFIX_ARG" && RUN_PREFIX="$RUN_PREFIX_ARG"
+test -n "$COMMAND_ARG" && COMMAND="$COMMAND_ARG"
+test -n "$TEST_DIR_ARG" && TEST_DIR="$TEST_DIR_ARG"
+test -n "$INIT_SCRIPT_ARG" && INIT_SCRIPT="$INIT_SCRIPT_ARG"
+
+test -z "$TEST_DIR" && TEST_DIR="`pwd`/tests"
+test ! -d "$TEST_DIR" && echo "Test directory: $TEST_DIR does not exist, add using --test-dir [dir name]" && exit 1
+
+export RUN_PREFIX COMMAND TEST_DIR
+
+# Watch args
+PROGRESS_ARG=$(echo $@ | grep -oP -- '(-p|--progress)');
+INTERVAL_ARG=$(echo $@ | grep -oP -- "--interval$ARG_RE")
+ALIVE_TIMEOUT_ARG=$(echo $@ | grep -oP -- "--alive-timeout$ARG_RE")
+ALIVE_CHECK_ARG=$(echo $@ | grep -oP -- "--alive-check=\K.*")
+
+test -n "$PROGRESS_ARG" && PROGRESS="$PROGRESS_ARG"
+test -n "$INTERVAL_ARG" && INTERVAL="$INTERVAL_ARG"
+test -n "$ALIVE_TIMEOUT_ARG" && ALIVE_TIMEOUT="$ALIVE_TIMEOUT_ARG"
+test -n "$ALIVE_CHECK_ARG" && ALIVE_CHECK="$ALIVE_CHECK_ARG"
+
+test -z "$INTERVAL" && INTERVAL=1
+test -z "$ALIVE_TIMEOUT" && ALIVE_TIMEOUT=10
+test -z "$ALIVE_CHECK" && ALIVE_CHECK=":"
+
+export PROGRESS INTERVAL ALIVE_TIMEOUT ALIVE_CHECK
+
+# Avail output directory
+test -z "$AVAIL_DIR" && AVAIL_DIR="`pwd`/.avail-tests"
+
+AVAIL_LOGS="$AVAIL_DIR/logs"
+AVAIL_PIDS="$AVAIL_DIR/pids"
+
+mkdir "$AVAIL_LOGS" 2>/dev/null
+mkdir "$AVAIL_PIDS" 2>/dev/null
+mkdir "$AVAIL_DIR" 2>/dev/null
+
+export AVAIL_LOGS AVAIL_PIDS AVAIL_WATCH_LOG AVAIL_PATH AVAIL_DIR
