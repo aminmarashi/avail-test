@@ -1,9 +1,10 @@
 #! /bin/bash
 
 BIN_DIR=~/bin/availability-test
+rm -rfv "$BIN_DIR"
 mkdir -p "$BIN_DIR"
 make DESTDIR="$BIN_DIR" install
-echo 'export PATH="$PATH:'"$BIN_DIR"'";' >> ~/.bashrc
+grep "$BIN_DIR" ~/.bashrc >/dev/null 2>&1 || echo 'export PATH="$PATH:'"$BIN_DIR"'";' >> ~/.bashrc
 export PATH="$PATH:$BIN_DIR"
 
 echo """
