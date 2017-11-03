@@ -6,7 +6,7 @@ Run your general purpose availability tests in parallel
 ## Install locally for the current user
 
 ```
-./install.sh
+source install.sh
 ```
 
 ## Install system-wide
