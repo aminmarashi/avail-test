@@ -10,6 +10,8 @@ AVAIL_PATH=`avail_path`
 
 . "$AVAIL_PATH/avail-env" "$@"
 
+test -z "$AVAIL_LOGS" && echo 'Unable to watch logs, tests are not running' && exit 1;
+
 is_alive() {
     ALIVE=`echo $ALIVE_LIST | grep $1`
     eval "$ALIVE_CHECK"

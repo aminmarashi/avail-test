@@ -12,7 +12,7 @@ CWD="`pwd`"
 AVAIL_CONFIG="$CWD"/avail.config
 AVAIL_WATCH_LOG="$CWD"/avail.log
 
-. "$AVAIL_CONFIG"
+test -e "$AVAIL_CONFIG" && . "$AVAIL_CONFIG"
 
 ARG_RE='[\s=]*\K[^\s^=]*'
 
