@@ -1,6 +1,6 @@
 #! /bin/bash
 
-BIN_DIR=`pwd`/bin/availability-test
+BIN_DIR=~/bin/availability-test
 mkdir -p "$BIN_DIR"
 make DESTDIR="$BIN_DIR" install
 echo 'export PATH="$PATH:'"$BIN_DIR"'";' >> ~/.bashrc
