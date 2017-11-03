@@ -10,7 +10,7 @@ AVAIL_PATH=`avail_path`
 
 . "$AVAIL_PATH/avail-env" "$@"
 
-test -e "$COMMAND" && echo 'usage: avail-run <-c|--command> <command>' && exit 1
+test -n "$COMMAND" && echo 'usage: avail-run <-c|--command> <command>' && exit 1
 
 test -n "$INIT_SCRIPT" && . "$INIT_SCRIPT"
 
