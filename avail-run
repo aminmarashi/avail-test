@@ -13,6 +13,7 @@ AVAIL_PATH=`avail_path`
 test -z "$COMMAND" && echo 'usage: avail-run <-c|--command> <command>' && exit 1
 
 test -n "$INIT_SCRIPT" && . "$INIT_SCRIPT"
+test -z "$RUN_PREFIX" && RUN_PREFIX="test_"
 
 rm "$LOGS/"* 2>/dev/null
 
