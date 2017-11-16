@@ -75,10 +75,10 @@ INTERVAL=1
 # How to run
 
 ```
-avail-start [options]
+avail-test [options]
 ```
 
-# avail.log
+## avail.log
 
 An availability log will be created in your CWD
 
@@ -86,19 +86,19 @@ An availability log will be created in your CWD
 tail -f avail.log
 ```
 
-# Stopping the tests
+## Stopping the tests
 
 ```
 ./stop.sh
 ```
 
-# Watch the logs
+## Watch the logs
 
 ```
 avail-watch --interval=1 --alive-timeout=60
 ```
 
-# Watch the last line of the logs (you need watch command installed)
+## Watch the last line of the logs (you need watch command installed)
 
 ```
 avail-watch -w
