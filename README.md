@@ -63,7 +63,7 @@ ALIVE_TIMEOUT=10
 # --alive-check=check-command # this has to be the last argument 
 ALIVE_CHECK='tail -n 1 $1 | grep some_text >/dev/null 2>&1'
 
-# If given a progress graph will be shown instead of watch command (you need to install watch before unsetting this)
+# Use watch command to watch the tests
 # (-w|--watch-command)
 WATCH_COMMAND=1
 
@@ -73,6 +73,14 @@ INTERVAL=1
 ```
 
 # How to run
+
+## Show help
+
+```
+avail-test -h
+```
+
+## Run the tests
 
 ```
 avail-test [options]

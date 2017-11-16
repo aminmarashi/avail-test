@@ -6,51 +6,66 @@ avail_path() {
     popd > /dev/null
 }
 
-AVAIL_PATH=`avail_path`
+ARG_RE='[\s=]*\K[^\s^=]*'
+ARGS="$@"
 
+add_option () {
+	HELP_PHRASE="$1"
+	NAME="$2"
+	OPTIONS="$3"
+	DEFAULT="$4"
+
+	TMP=$(echo "$ARGS" | grep -oP -- "$OPTIONS")
+	test -n "$TMP" && eval "$NAME=\"$TMP\""
+
+	OPTION_STR=$(echo "$OPTIONS" | grep -o "^(*[a-z\|-]*)*")
+	let PADDING_COUNT=$HELP_PADDING_LENGTH-${#OPTION_STR}
+	PADDING=$(printf '%.s ' `eval "echo {1..$PADDING_COUNT}"`)
+	HELP="$HELP\n  $OPTION_STR$PADDING$HELP_PHRASE"
+
+	export $NAME
+
+	test $NAME == "AVAIL_HELP"  && return
+
+	HELP="$HELP\n    "$(printf "%"$HELP_PADDING_LENGTH"s")"(Config name: $NAME"
+
+	if [ -n "$DEFAULT" ]; then
+		test -z $"$NAME" && $NAME="$DEFAULT"
+		HELP="$HELP, Default value: \"$DEFAULT\""
+	fi
+
+	HELP="$HELP)"
+}
+
+AVAIL_PATH=`avail_path`
+HELP="Usage: avail-test [options]"
+HELP="$HELP\n       avail-stop [options]"
+HELP="$HELP\n       avail-watch [options]"
+HELP="$HELP\n\nOptions: \n"
+HELP_PADDING_LENGTH=22
+HELP_FOOTER="\n\nAdd an issue for bug reports or suggestions https://github.com/aminmarashi/avail-test/issues"
 CWD="`pwd`"
+
 AVAIL_CONFIG="$CWD"/avail.config
 AVAIL_WATCH_LOG="$CWD"/avail.log
 
 test -e "$AVAIL_CONFIG" && . "$AVAIL_CONFIG"
 
-ARG_RE='[\s=]*\K[^\s^=]*'
-
 # Run args
-RUN_PREFIX_ARG=$(echo $@ | grep -oP -- "--run-prefix$ARG_RE")
-COMMAND_ARG=$(echo $@ | grep -oP -- "(-c|--command)$ARG_RE")
-TEST_DIR_ARG=$(echo $@ | grep -oP -- "(-t|--test-dir)$ARG_RE")
-INIT_SCRIPT_ARG=$(echo $@ | grep -oP -- "(-i|--init-script)$ARG_RE")
-
-test -n "$RUN_PREFIX_ARG" && RUN_PREFIX="$RUN_PREFIX_ARG"
-test -n "$COMMAND_ARG" && COMMAND="$COMMAND_ARG"
-test -n "$TEST_DIR_ARG" && TEST_DIR="$TEST_DIR_ARG"
-test -n "$INIT_SCRIPT_ARG" && INIT_SCRIPT="$INIT_SCRIPT_ARG"
-
-test -z "$TEST_DIR" && TEST_DIR="`pwd`/tests"
-test ! -d "$TEST_DIR" && echo "Test directory: $TEST_DIR does not exist, add using --test-dir [dir name]" && exit 1
-
-export RUN_PREFIX COMMAND TEST_DIR
+add_option "If specified this will one or more prefix to your tests" RUN_PREFIX "--run-prefix$ARG_RE"
+add_option "This will be used to run your tests, you should use single quote to avoid interpolation" COMMAND "(-c|--command)$ARG_RE"
+add_option "This is where we look for your test files which will be run using the COMMAND" TEST_DIR "(-t|--test-dir)$ARG_RE" "`pwd`/tests"
+add_option "Init script will be executed before running the actual tests, useful for initialization purposes" INIT_SCRIPT "(-i|--init-script)$ARG_RE"
 
 # Watch args
-WATCH_COMMAND_ARG=$(echo $@ | grep -oP -- "(-w|--watch-command)");
-INTERVAL_ARG=$(echo $@ | grep -oP -- "--interval$ARG_RE")
-ALIVE_TIMEOUT_ARG=$(echo $@ | grep -oP -- "--alive-timeout$ARG_RE")
-ALIVE_CHECK_ARG=$(echo $@ | grep -oP -- "--alive-check=\K.*")
+add_option "Use watch command to watch the tests (unset by default)" WATCH_COMMAND "(-w|--watch-command)"
+add_option "Time interval between each watch update in seconds" INTERVAL "--interval$ARG_RE" 1
+add_option "Timeout to consider not updated test logs to be dead in seconds" ALIVE_TIMEOUT "--alive-timeout$ARG_RE" 10
+add_option "This is a command that if given will run against your test logs to determine whether they're still alive (by checking the return value of the command)\n  Also the log file is given as \$1 like the example below\n  ALIVE_CHECK='tail -n 1 \$1 | grep some_text >/dev/null 2>&1'" ALIVE_CHECK "--alive-check=\K.*" ":"
 
-test -n "$WATCH_COMMAND_ARG" && WATCH_COMMAND="$WATCH_COMMAND_ARG"
-test -n "$INTERVAL_ARG" && INTERVAL="$INTERVAL_ARG"
-test -n "$ALIVE_TIMEOUT_ARG" && ALIVE_TIMEOUT="$ALIVE_TIMEOUT_ARG"
-test -n "$ALIVE_CHECK_ARG" && ALIVE_CHECK="$ALIVE_CHECK_ARG"
-
-test -z "$INTERVAL" && INTERVAL=1
-test -z "$ALIVE_TIMEOUT" && ALIVE_TIMEOUT=10
-test -z "$ALIVE_CHECK" && ALIVE_CHECK=":"
-
-export WATCH_COMMAND INTERVAL ALIVE_TIMEOUT ALIVE_CHECK
-
-# Avail output directory
-test -z "$AVAIL_DIR" && AVAIL_DIR="`pwd`/.avail-tests"
+# Avail args
+add_option "This is where avail-test keeps its output files" AVAIL_DIR "(-d|--avail-dir)$ARG_RE" "`pwd`/.avail-tests"
+add_option "Prints this help message and exits" AVAIL_HELP "(-h|--help)"
 
 AVAIL_LOGS="$AVAIL_DIR/logs"
 AVAIL_PIDS="$AVAIL_DIR/pids"
@@ -59,4 +74,8 @@ mkdir "$AVAIL_LOGS" 2>/dev/null
 mkdir "$AVAIL_PIDS" 2>/dev/null
 mkdir "$AVAIL_DIR" 2>/dev/null
 
-export AVAIL_LOGS AVAIL_PIDS AVAIL_WATCH_LOG AVAIL_PATH AVAIL_DIR
+test -n "$AVAIL_HELP" && echo -e "$HELP$HELP_FOOTER" && exit 0
+
+test ! -d "$TEST_DIR" && echo "Test directory: $TEST_DIR does not exist, add using --test-dir [dir name]" && exit 1
+
+export AVAIL_LOGS AVAIL_PIDS AVAIL_WATCH_LOG AVAIL_PATH
