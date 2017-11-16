@@ -23,14 +23,15 @@ add_option () {
 	PADDING=$(printf '%.s ' `eval "echo {1..$PADDING_COUNT}"`)
 	HELP="$HELP\n  $OPTION_STR$PADDING$HELP_PHRASE"
 
-	export $NAME
-
+        # Don't process AVAIL_HELP further
 	test $NAME == "AVAIL_HELP"  && return
+
+	export $NAME
 
 	HELP="$HELP\n    "$(printf "%"$HELP_PADDING_LENGTH"s")"(Config name: $NAME"
 
 	if [ -n "$DEFAULT" ]; then
-		test -z $"$NAME" && $NAME="$DEFAULT"
+		eval "$NAME=\"$DEFAULT\""
 		HELP="$HELP, Default value: \"$DEFAULT\""
 	fi
 
