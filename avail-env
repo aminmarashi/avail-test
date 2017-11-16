@@ -33,12 +33,12 @@ test ! -d "$TEST_DIR" && echo "Test directory: $TEST_DIR does not exist, add usi
 export RUN_PREFIX COMMAND TEST_DIR
 
 # Watch args
-PROGRESS_ARG=$(echo $@ | grep -oP -- '(-p|--progress)');
+WATCH_COMMAND_ARG=$(echo $@ | grep -oP -- "(-w|--watch-command)");
 INTERVAL_ARG=$(echo $@ | grep -oP -- "--interval$ARG_RE")
 ALIVE_TIMEOUT_ARG=$(echo $@ | grep -oP -- "--alive-timeout$ARG_RE")
 ALIVE_CHECK_ARG=$(echo $@ | grep -oP -- "--alive-check=\K.*")
 
-test -n "$PROGRESS_ARG" && PROGRESS="$PROGRESS_ARG"
+test -n "$WATCH_COMMAND_ARG" && WATCH_COMMAND="$WATCH_COMMAND_ARG"
 test -n "$INTERVAL_ARG" && INTERVAL="$INTERVAL_ARG"
 test -n "$ALIVE_TIMEOUT_ARG" && ALIVE_TIMEOUT="$ALIVE_TIMEOUT_ARG"
 test -n "$ALIVE_CHECK_ARG" && ALIVE_CHECK="$ALIVE_CHECK_ARG"
@@ -47,7 +47,7 @@ test -z "$INTERVAL" && INTERVAL=1
 test -z "$ALIVE_TIMEOUT" && ALIVE_TIMEOUT=10
 test -z "$ALIVE_CHECK" && ALIVE_CHECK=":"
 
-export PROGRESS INTERVAL ALIVE_TIMEOUT ALIVE_CHECK
+export WATCH_COMMAND INTERVAL ALIVE_TIMEOUT ALIVE_CHECK
 
 # Avail output directory
 test -z "$AVAIL_DIR" && AVAIL_DIR="`pwd`/.avail-tests"

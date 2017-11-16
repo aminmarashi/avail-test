@@ -64,8 +64,8 @@ ALIVE_TIMEOUT=10
 ALIVE_CHECK='tail -n 1 $1 | grep some_text >/dev/null 2>&1'
 
 # If given a progress graph will be shown instead of watch command (you need to install watch before unsetting this)
-# (-p|--progress)
-PROGRESS=1
+# (-w|--watch-command)
+WATCH_COMMAND=1
 
 # Time interval between each watch update (defualt = 1s)
 # --interval[=]interval
@@ -95,5 +95,11 @@ tail -f avail.log
 # Watch the logs
 
 ```
-avail-watch -p --interval=1 --alive-timeout=60
+avail-watch --interval=1 --alive-timeout=60
+```
+
+# Watch the last line of the logs (you need watch command installed)
+
+```
+avail-watch -w
 ```
