@@ -31,7 +31,7 @@ add_option () {
 	HELP="$HELP\n    "$(printf "%"$HELP_PADDING_LENGTH"s")"(Config name: $NAME"
 
 	if [ -n "$DEFAULT" ]; then
-		eval "$NAME=\"$DEFAULT\""
+		test -z `eval 'echo $'"$NAME"` && eval "$NAME=\"$DEFAULT\""
 		HELP="$HELP, Default value: \"$DEFAULT\""
 	fi
 
