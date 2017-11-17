@@ -39,7 +39,7 @@ show_test_progress() {
 if [ -z "$WATCH_COMMAND" ]; then
     show_test_progress
 else
-    watch -n $INTERVAL "tail -n 1 $AVAIL_LOGS/*"
+    watch -n $INTERVAL "tail -n $LOG_LINES $AVAIL_LOGS/*"
 fi
 
 exit 1;

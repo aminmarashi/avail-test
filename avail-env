@@ -63,6 +63,7 @@ add_option "Use watch command to watch the tests (unset by default)" WATCH_COMMA
 add_option "Time interval between each watch update in seconds" INTERVAL "--interval$ARG_RE" 1
 add_option "Timeout to consider not updated test logs to be dead in seconds" ALIVE_TIMEOUT "--alive-timeout$ARG_RE" 10
 add_option "This is a command that if given will run against your test logs to determine whether they're still alive (by checking the return value of the command)\n  Also the log file is given as \$1 like the example below\n  ALIVE_CHECK='tail -n 1 \$1 | grep some_text >/dev/null 2>&1'" ALIVE_CHECK "--alive-check=\K.*" ":"
+add_option "Number of lines shown from the logs (works with WATCH_COMMAND)" LOG_LINES "(-l|--log-lines)$ARG_RE" 1
 
 # Avail args
 add_option "This is where avail-test keeps its output files" AVAIL_DIR "(-d|--avail-dir)$ARG_RE" "`pwd`/.avail-tests"
