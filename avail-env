@@ -71,9 +71,9 @@ add_option "Prints this help message and exits" AVAIL_HELP "(-h|--help)"
 AVAIL_LOGS="$AVAIL_DIR/logs"
 AVAIL_PIDS="$AVAIL_DIR/pids"
 
+mkdir "$AVAIL_DIR" 2>/dev/null
 mkdir "$AVAIL_LOGS" 2>/dev/null
 mkdir "$AVAIL_PIDS" 2>/dev/null
-mkdir "$AVAIL_DIR" 2>/dev/null
 
 test -n "$AVAIL_HELP" && echo -e "$HELP$HELP_FOOTER" && exit 0
 

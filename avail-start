@@ -10,7 +10,7 @@ AVAIL_PATH=`avail_path`
 
 . "$AVAIL_PATH/avail-env" "$@"
 
-"$AVAIL_PATH/"avail-stop && "$AVAIL_PATH/"avail-run "$@"
+"$AVAIL_PATH/"avail-stop && rm -rf "$AVAIL_DIR" && "$AVAIL_PATH/"avail-run "$@"
 "$AVAIL_PATH/"avail-watch "--interval=10 $@" > "$AVAIL_WATCH_LOG" &
 echo $! > "$AVAIL_PIDS/avail-watch.pid"
 "$AVAIL_PATH/"avail-watch "$@"
